@@ -9,22 +9,8 @@ pipeline{
         stage('Unit and Integration Test'){
             steps{
                 echo "Running Unit tests to ensure the code functions as expected..."
-                echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..."
-                bat "del test.zip"
-                zip zipFile: 'test.zip', archive: false, dir: 'target'
+                echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..." > "test.txt"
             }
-        }
-        post {
-            failure {
-                emailext attachmentsPattern: 'test.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
-                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
-                        mimeType: 'text/html',to: "s222521972@deakin.edu.au"
-                }
-             success {
-                   emailext attachmentsPattern: 'test.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
-                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
-                        mimeType: 'text/html',to: "s222521972@deakin.edu.au"
-              }      
         }
         stage('Code Analysis'){
             steps{
@@ -33,22 +19,8 @@ pipeline{
         }
         stage('Security Scan'){
             steps{
-                echo "Scanning for security vulnerabilities in code, using Codesonar..."
-                bat "del security_scan.zip"
-                zip zipFile: 'security_scan.zip', archive: false, dir: 'target'
+                echo "Scanning for security vulnerabilities in code, using Codesonar..." > "security_scan.txt"
             }
-        }
-        post {
-            failure {
-                emailext attachmentsPattern: 'security_scan.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
-                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
-                        mimeType: 'text/html',to: "s222521972@deakin.edu.au"
-                }
-             success {
-                   emailext attachmentsPattern: 'security_scan.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
-                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
-                        mimeType: 'text/html',to: "s222521972@deakin.edu.au"
-              }      
         }
         stage('Deploy'){
             steps{
@@ -65,5 +37,17 @@ pipeline{
                 echo "Deploying the application to a production server on AWS EC2 instance..."
             }
         }
+    }
+    post {
+        failure {
+            emailext attachLog: true, attachmentsPattern:"test.txt, security_scan.txt", body: '''${SCRIPT, template="groovy-html.template"}''', 
+                    subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
+                    mimeType: 'text/html',to: "s222521972@deakin.edu.au"
+            }
+         success {
+               emailext attachLog: true, attachmentsPattern:"test.txt, security_scan.txt", body: '''${SCRIPT, template="groovy-html.template"}''', 
+                    subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
+                    mimeType: 'text/html',to: "s222521972@deakin.edu.au"
+          }      
     }
 }
