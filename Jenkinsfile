@@ -9,7 +9,7 @@ pipeline{
         stage('Unit and Integration Test'){
             steps{
                 echo "Running Unit tests to ensure the code functions as expected..."
-                echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..." > "test.txt"
+                echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..."
             }
         }
         stage('Code Analysis'){
