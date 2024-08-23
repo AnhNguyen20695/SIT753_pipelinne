@@ -9,7 +9,7 @@ pipeline{
         stage('Unit and Integration Test'){
             steps{
                 echo "Running Unit tests to ensure the code functions as expected..."
-                echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..." > "test.txt"
+                echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..."
             }
         }
         stage('Code Analysis'){
@@ -19,7 +19,7 @@ pipeline{
         }
         stage('Security Scan'){
             steps{
-                echo "Scanning for security vulnerabilities in code, using Codesonar..." > "security_scan.txt"
+                echo "Scanning for security vulnerabilities in code, using Codesonar..."
             }
         }
         stage('Deploy'){
