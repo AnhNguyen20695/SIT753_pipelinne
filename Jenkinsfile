@@ -10,7 +10,21 @@ pipeline{
             steps{
                 echo "Running Unit tests to ensure the code functions as expected..."
                 echo "Running Integration tests to ensure the different components of the application work together as expected, using Selenium..."
+                bat "del test.zip"
+                zip zipFile: 'test.zip', archive: false, dir: 'target'
             }
+        }
+        post {
+            failure {
+                emailext attachmentsPattern: 'test.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
+                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
+                        mimeType: 'text/html',to: "email id"
+                }
+             success {
+                   emailext attachmentsPattern: 'test.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
+                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
+                        mimeType: 'text/html',to: "email id"
+              }      
         }
         stage('Code Analysis'){
             steps{
@@ -20,7 +34,21 @@ pipeline{
         stage('Security Scan'){
             steps{
                 echo "Scanning for security vulnerabilities in code, using Codesonar..."
+                bat "del security_scan.zip"
+                zip zipFile: 'security_scan.zip', archive: false, dir: 'target'
             }
+        }
+        post {
+            failure {
+                emailext attachmentsPattern: 'security_scan.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
+                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
+                        mimeType: 'text/html',to: "email id"
+                }
+             success {
+                   emailext attachmentsPattern: 'security_scan.zip', body: '''${SCRIPT, template="groovy-html.template"}''', 
+                        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
+                        mimeType: 'text/html',to: "email id"
+              }      
         }
         stage('Deploy'){
             steps{
